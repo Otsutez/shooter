@@ -8,8 +8,10 @@
 #include "raylib.h"
 #include "button.h"
 #include "config.h"
+#include "player.h"
 
 using button::Button;
+using player::Player;
 
 namespace game {
 	class Game;
@@ -19,7 +21,7 @@ namespace game {
 	{
 	public:
 		virtual ~GameState() {}
-		virtual void update(Game& game) {}
+		virtual GameState* update(Game& game) = 0;
 		virtual void draw(Game& game) {}
 	};
 
@@ -28,8 +30,9 @@ namespace game {
 	{
 	public:
 		LobbyState();
-		virtual void update(Game& game);
+		virtual GameState* update(Game& game);
 		virtual void draw(Game& game);
+		~LobbyState();
 
 	private:
 		Button* m_playButton;
@@ -39,9 +42,12 @@ namespace game {
 	// Play state class
 	class PlayState : public GameState
 	{
-		PlayState();
-		virtual void update(Game& game);
+	public:
+		virtual GameState* update(Game& game);
 		virtual void draw(Game& game);
+
+	private:
+		Player player;
 	};
 
 	// Game class

@@ -12,8 +12,14 @@ Game::~Game()
 void Game::run()
 {
 	while (is_running()) {
-		// Update
-		m_state->update(*this);
+		// Check if state needs to be update
+		GameState* new_state = m_state->update(*this);
+		if (new_state)
+		{
+			delete m_state;
+			m_state = new_state;
+		}
+
 		// Draw
 		BeginDrawing();
 		ClearBackground(WHITE);
@@ -22,12 +28,12 @@ void Game::run()
 	}
 }
 
-bool game::Game::is_running()
+bool Game::is_running()
 {
 	return !WindowShouldClose() && m_running;
 }
 
-void game::Game::set_running(bool val)
+void Game::set_running(bool val)
 {
 	m_running = val;
 }
@@ -42,7 +48,7 @@ LobbyState::LobbyState()
 	m_quitButton = new Button{ x, quit_y, BUTTON_WIDTH, BUTTON_HEIGHT, "QUIT" };
 }
 
-void LobbyState::update(Game& game)
+GameState* LobbyState::update(Game& game)
 {
 	// Update button states to deteck clicking
 	m_playButton->updateState();
@@ -53,18 +59,34 @@ void LobbyState::update(Game& game)
 		// Quit game because quit button was clicked
 		game.set_running(false);
 	}
+
+	if (m_playButton->clicked()) {
+		// Start game and change game state
+		return new PlayState;
+	}
+
+	return nullptr;
 }
 
-void game::LobbyState::draw(Game& game)
+void LobbyState::draw(Game& game)
 {
 	m_playButton->draw();
 	m_quitButton->draw();
 }
 
-void game::PlayState::update(Game& game)
+LobbyState::~LobbyState()
 {
+	delete m_playButton;
+	delete m_quitButton;
 }
 
-void game::PlayState::draw(Game& game)
+GameState* game::PlayState::update(Game& game)
 {
+	// Do nothing
+	return nullptr;
+}
+
+void PlayState::draw(Game& game)
+{
+	DrawText("Gameplay time!", 100, 100, 20, RED);
 }
