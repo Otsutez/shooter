@@ -18,11 +18,12 @@ void Game::run()
 		{
 			delete m_state;
 			m_state = new_state;
+			m_state->enter();
 		}
 
 		// Draw
 		BeginDrawing();
-		ClearBackground(WHITE);
+		ClearBackground(SKYBLUE);
 		m_state->draw(*this);
 		EndDrawing();
 	}
@@ -74,19 +75,39 @@ void LobbyState::draw(Game& game)
 	m_quitButton->draw();
 }
 
+void LobbyState::enter()
+{
+	// Do nothing
+}
+
 LobbyState::~LobbyState()
 {
 	delete m_playButton;
 	delete m_quitButton;
 }
 
-GameState* game::PlayState::update(Game& game)
+game::PlayState::PlayState()
 {
-	// Do nothing
+	m_player = new Player;
+	m_map = new Map;
+}
+
+GameState* PlayState::update(Game& game)
+{
+	// Update player camera
+	m_player->update();
 	return nullptr;
 }
 
 void PlayState::draw(Game& game)
 {
-	DrawText("Gameplay time!", 100, 100, 20, RED);
+	BeginMode3D(m_player->m_camera);
+	m_map->draw();
+	EndMode3D();
 }
+
+void PlayState::enter()
+{
+	DisableCursor();
+}
+

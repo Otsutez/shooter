@@ -9,9 +9,11 @@
 #include "button.h"
 #include "config.h"
 #include "player.h"
+#include "map.h"
 
 using button::Button;
 using player::Player;
+using map::Map;
 
 namespace game {
 	class Game;
@@ -22,7 +24,8 @@ namespace game {
 	public:
 		virtual ~GameState() {}
 		virtual GameState* update(Game& game) = 0;
-		virtual void draw(Game& game) {}
+		virtual void draw(Game& game) = 0;
+		virtual void enter() = 0;
 	};
 
 	// Lobby state class
@@ -32,6 +35,7 @@ namespace game {
 		LobbyState();
 		virtual GameState* update(Game& game);
 		virtual void draw(Game& game);
+		virtual void enter();
 		~LobbyState();
 
 	private:
@@ -43,11 +47,14 @@ namespace game {
 	class PlayState : public GameState
 	{
 	public:
+		PlayState();
 		virtual GameState* update(Game& game);
 		virtual void draw(Game& game);
+		void enter();
 
 	private:
-		Player player;
+		Player* m_player;
+		Map* m_map;
 	};
 
 	// Game class
@@ -57,6 +64,7 @@ namespace game {
 			m_state{ new LobbyState },
 			m_running{ true }
 		{
+			SetConfigFlags(FLAG_MSAA_4X_HINT);
 			InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Shooter");
 			SetTargetFPS(60);
 		}
