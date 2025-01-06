@@ -14,10 +14,16 @@
 #define BUTTON_MIDCLICK_COLOR YELLOW
 #define BUTTON_SPACING 20
 
-// Player capsule configuration
-#define CAPSULE_RADIUS 1.2f
+// Player configuration
+#define PLAYER_HEIGHT 2.0f
+#define PLAYER_START_X 9.0f
+#define PLAYER_START_Y 0.0f
+#define PLAYER_START_Z 0.0f
+#define CAPSULE_RADIUS 0.5f
 #define CAPSULE_SLICES 8
 #define CAPSULE_RINGS 8
+#define SPEED 60.0f
+#define CAMERA_MOUSE_MOVE_SENSITIVITY 0.003f
 
 // Vector
 #define ORIGIN Vector3 {0.0f, 0.0f, 0.0f}
@@ -25,4 +31,4 @@
 // Map
 #define MAP_WIDTH 20
 #define MAP_LENGTH 20
-#define TILE_SIZE 2.0f
+#define TILE_SIZE 1.75f

@@ -131,6 +131,7 @@
     <ClCompile Include="button.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="map.cpp" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="shooter.cpp" />
   </ItemGroup>
@@ -140,6 +141,7 @@
     <ClInclude Include="button.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

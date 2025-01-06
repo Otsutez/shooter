@@ -24,8 +24,8 @@ void Button::draw()
 
     Font font = GetFontDefault();
     Vector2 textSize = MeasureTextEx(font, m_text.c_str(), 20, 0);
-    float text_x = m_button_rec.x + m_button_rec.width / 2 - textSize.x / 2;
-    float text_y = m_button_rec.y + m_button_rec.height / 2 - textSize.y / 2;
+    int text_x = m_button_rec.x + m_button_rec.width / 2 - textSize.x / 2;
+    int text_y = m_button_rec.y + m_button_rec.height / 2 - textSize.y / 2;
     DrawText(m_text.c_str(), text_x, text_y, 20, BLACK);
 }
 
