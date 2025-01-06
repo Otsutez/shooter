@@ -12,6 +12,20 @@ void object::Cube::draw()
 	DrawCubeWiresV(m_position, m_size, BLACK);
 }
 
+BoundingBox object::Cube::getBoundingBox()
+{
+	float halfLength = m_size.z / 2.0f;
+	float halfWidth = m_size.x / 2.0f;
+	float halfHeight = m_size.y / 2.0f;
+
+	return BoundingBox
+	{
+		Vector3{ m_position.x - halfWidth, m_position.y - halfHeight, m_position.z - halfLength},
+		Vector3{ m_position.x + halfWidth, m_position.y + halfHeight, m_position.z + halfLength},
+
+	};
+}
+
 void object::Cube::move(Vector3 newPos)
 {
 	m_position = newPos;

@@ -1,35 +1,29 @@
 #include "player.h"
-#include "config.h"
-#include "object.h"
-#include "raymath.h"
 
 using namespace player;
 
 Player::Player()
 {
-    // Initialize player physics
-    m_position = Vector3{ PLAYER_START_X * TILE_SIZE, PLAYER_START_Y, PLAYER_START_Z};
-    m_velocity = Vector3{};
-    m_lookAngles = Vector2{};
-
     // Initialize camera
     Camera3D camera{ 0 };
-    camera.position = Vector3{ m_position.x, PLAYER_HEIGHT, m_position.z };
+    camera.position = Vector3{ PLAYER_START_X * TILE_SIZE, PLAYER_HEIGHT, PLAYER_START_Z * TILE_SIZE };
     camera.target = Vector3{ -1.0f, 0.0f, 0.0f };
     camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
-
     m_camera = camera;
-    m_camera_mode = CAMERA_FIRST_PERSON;
 
     // Initialize player capsule body
-    Vector3 startPos = Vector3{ m_position.x, m_position.y, m_position.z };
-    Vector3 endPos = Vector3{ m_position.x, PLAYER_HEIGHT, m_position.z };
+    Vector3 startPos = Vector3{ m_camera.position.x, 0.0f, m_camera.position.z };
+    Vector3 endPos = Vector3{ m_camera.position.x, PLAYER_HEIGHT, m_camera.position.z };
     m_body = new object::Capsule{ startPos, endPos, CAPSULE_RADIUS, CAPSULE_SLICES, CAPSULE_RINGS, YELLOW };
+
+    // Initialize player state
+    m_velocity = Vector3{ 0.0f, 0.0f, 0.0f };
+    m_jumping = false;
 }
 
-void Player::update()
+void Player::update(std::vector<object::Cube*>& objects)
 {
     // ----------------------------------------------------------------
     // Change player direction due to mouse input
@@ -44,7 +38,7 @@ void Player::update()
 
     // Rotate forward vector around up axis to rotate camera left/right
     forward = Vector3RotateByAxisAngle(forward, m_camera.up, yawAngle);
-    
+
     // Clamp view up
     float maxAngleUp = Vector3Angle(up, forward);
     maxAngleUp -= 0.001f; // avoid numerical errors
@@ -64,7 +58,7 @@ void Player::update()
 
     // ----------------------------------------------------------------
     // Change player position due to keyboard input
-    // Inspiration from https://gist.github.com/sumofat/1645897853232b1e46b941c4e5197ed5
+    // Inspiration from https://gist.github.com/jakubtomsu/9cae5298f86d2b9d2aed48641a1a3dbd
     // ----------------------------------------------------------------
 
     float dt = GetFrameTime();
@@ -92,18 +86,77 @@ void Player::update()
         m_velocity -= right * dt * SPEED;
     }
 
+    //// Gravity
+    //if (m_camera.position.y - PLAYER_HEIGHT > 0)
+    //{
+    //    m_velocity.y -= dt * 15 + 0.3;
+    //}
+    //else
+    //{
+    //    m_jumping = false;
+    //}
+
+    //// Jumping
+    //if (IsKeyDown(' '))
+    //{
+    //    if (!m_jumping) {
+    //        m_velocity.y = 15;
+    //        m_jumping = true;
+    //    }
+    //}
+
     // Damping
     m_velocity *= 0.85625f;
 
-    // Change camera position with respect to velocity
+    // Check collision
     Vector3 displacement = m_velocity * dt;
-    m_camera.position += displacement;
-    m_camera.target += displacement;
+    Vector3 newDisplacement = displacementAfterCollision(displacement, objects);
 
+    // Change camera position with respect to displacement
+    m_camera.position += newDisplacement;
+    m_camera.target += newDisplacement;
+    
     // Move body to camera position
     m_body->move(m_camera.position);
+}
+Vector3 player::Player::displacementAfterCollision(Vector3 displacement, std::vector<object::Cube*>& objects)
+{
+
+    TraceLog(LOG_DEBUG, "Collision detected");
+    // Check horizontal collision
+    Vector3 newXPos = Vector3{ m_camera.position.x + displacement.x, m_camera.position.y, m_camera.position.z };
+    for (object::Cube* cube : objects)
+    {
+        if (CheckCollisionBoxes(getBoundingBox(newXPos), cube->getBoundingBox()) == true) {
+            displacement.x = 0;
+            
+            break;
+        }
+    }
+
+    // Check vertical
+    Vector3 newYPos = Vector3{ m_camera.position.x, m_camera.position.y, m_camera.position.z + displacement.z };
+    for (object::Cube* cube : objects)
+    {
+        if (CheckCollisionBoxes(getBoundingBox(newYPos), cube->getBoundingBox()) == true) {
+            displacement.z = 0;
+            break;
+        }
+    }
+
+    return displacement;
 
 }
+
+BoundingBox player::Player::getBoundingBox(Vector3 pos)
+{
+    return BoundingBox
+    {
+        Vector3 {pos.x - CAPSULE_RADIUS, pos.y - 2.0f, pos.z - CAPSULE_RADIUS},
+        Vector3 {pos.x + CAPSULE_RADIUS, pos.y, pos.z + CAPSULE_RADIUS}
+    };
+}
+
 void player::Player::draw()
 {
     m_body->draw();

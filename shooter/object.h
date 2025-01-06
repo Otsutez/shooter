@@ -40,6 +40,7 @@ namespace object
 		}
 
 		virtual void draw();
+		BoundingBox getBoundingBox();
 		void move(Vector3 newPos);
 	private:
 		Vector3 m_position;

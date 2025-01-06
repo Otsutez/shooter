@@ -11,9 +11,11 @@ namespace map
 	public:
 		Map();
 		void draw();
+		std::vector<object::Cube*>& getObjects();
 
 	private:
-		std::vector<object::Object*> m_objects;
+		object::Plane* m_plane;
+		std::vector<object::Cube*> m_objects;
 		int m_map[MAP_LENGTH][MAP_WIDTH];
 	};
 }

@@ -33,7 +33,7 @@ map::Map::Map() :
 	// construct plane
 	float mapLength = MAP_LENGTH * TILE_SIZE;
 	float mapWidth = MAP_WIDTH * TILE_SIZE;
-	m_objects.push_back(new object::Plane{ ORIGIN, Vector2 {mapLength, mapWidth}, GRAY });
+	m_plane = new object::Plane{ ORIGIN, Vector2 {mapLength, mapWidth}, GRAY };
 
 	// Construct walls
 	float wallOffset = mapLength / 2 + TILE_SIZE / 2.0f;
@@ -58,7 +58,13 @@ map::Map::Map() :
 
 void map::Map::draw()
 {
+	m_plane->draw();
 	for (object::Object* object : m_objects) {
 		object->draw();
 	}
+}
+
+std::vector<object::Cube*>& map::Map::getObjects()
+{
+	return m_objects;
 }

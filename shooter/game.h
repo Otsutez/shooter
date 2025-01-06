@@ -36,6 +36,7 @@ namespace game {
 	private:
 		bool m_running;
 		GameState m_state;
+		Camera3D m_lobbyCamera;
 		Button* m_playButton;
 		Button* m_quitButton;
 		Player* m_player;
