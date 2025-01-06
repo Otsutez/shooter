@@ -12,6 +12,7 @@ Game::Game()
 	m_bg = Color{ 102, 191, 255, 255 };
 	SetConfigFlags(FLAG_MSAA_4X_HINT);
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Shooter");
+	m_crosshair = LoadTexture("crosshair007.png");
 	SetTargetFPS(60);
 	float x = SCREEN_WIDTH / 2.0f - BUTTON_WIDTH / 2.0f;
 	float play_y = SCREEN_HEIGHT / 2.0f - BUTTON_HEIGHT - BUTTON_SPACING / 2.0f;
@@ -35,6 +36,7 @@ Game::~Game()
 	delete m_quitButton;
 	delete m_player;
 	delete m_map;
+	UnloadTexture(m_crosshair);
 	CloseWindow();
 }
 
@@ -118,5 +120,8 @@ void Game::drawPlay()
 	m_map->draw();
 	m_player->draw();
 	EndMode3D();
+
+	// Draw crosshair
+	DrawTexture(m_crosshair, SCREEN_WIDTH / 2 - m_crosshair.width / 2, SCREEN_HEIGHT / 2 - m_crosshair.height / 2, RAYWHITE);
 }
 

@@ -42,5 +42,6 @@ namespace game {
 		Player* m_player;
 		Map* m_map;
 		Color m_bg;
+		Texture2D m_crosshair;
 	};
 };

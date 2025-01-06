@@ -31,4 +31,4 @@
 // Map
 #define MAP_WIDTH 20
 #define MAP_LENGTH 20
-#define TILE_SIZE 1.75f
+#define TILE_SIZE 1.65f
