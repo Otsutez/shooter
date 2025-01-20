@@ -2,11 +2,11 @@
 
 using namespace player;
 
-Player::Player()
+Player::Player(Vector3 pos)
 {
     // Initialize camera
     Camera3D camera{ 0 };
-    camera.position = Vector3{ PLAYER_START_X * TILE_SIZE, PLAYER_HEIGHT, PLAYER_START_Z * TILE_SIZE };
+    camera.position = Vector3{ pos.x * TILE_SIZE, PLAYER_HEIGHT, pos.z * TILE_SIZE };
     camera.target = Vector3{ -1.0f, 0.0f, 0.0f };
     camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
@@ -16,11 +16,12 @@ Player::Player()
     // Initialize player capsule body
     Vector3 startPos = Vector3{ m_camera.position.x, 0.0f, m_camera.position.z };
     Vector3 endPos = Vector3{ m_camera.position.x, PLAYER_HEIGHT, m_camera.position.z };
-    m_body = new object::Capsule{ startPos, endPos, CAPSULE_RADIUS, CAPSULE_SLICES, CAPSULE_RINGS, YELLOW };
+    m_body = new object::Capsule{ startPos, endPos, CAPSULE_RADIUS, CAPSULE_SLICES, CAPSULE_RINGS, GREEN };
 
     // Initialize player state
     m_velocity = Vector3{ 0.0f, 0.0f, 0.0f };
     m_jumping = false;
+    m_pistol = new Pistol;
 }
 
 void Player::update(std::vector<object::Cube*>& objects)
@@ -112,12 +113,15 @@ void Player::update(std::vector<object::Cube*>& objects)
     Vector3 displacement = m_velocity * dt;
     Vector3 newDisplacement = displacementAfterCollision(displacement, objects);
 
-    // Change camera position with respect to displacement
+    // Change camera position with respect to new displacement
     m_camera.position += newDisplacement;
     m_camera.target += newDisplacement;
     
     // Move body to camera position
     m_body->move(m_camera.position);
+
+    // Gun
+    m_pistol->update();
 }
 Vector3 player::Player::displacementAfterCollision(Vector3 displacement, std::vector<object::Cube*>& objects)
 {
@@ -159,12 +163,75 @@ BoundingBox player::Player::getBoundingBox(Vector3 pos)
 
 void player::Player::draw()
 {
+    BeginMode3D(m_camera);
     m_body->draw();
+    EndMode3D();
+    m_pistol->draw();
 }
+
+void player::Player::draw(Camera3D camera)
+{
+    BeginMode3D(camera);
+    m_body->draw();
+    EndMode3D();
+}
+
 Camera3D Player::getCamera()
 {
     return m_camera;
 }
 
+player::Pistol::Pistol()
+{
+    m_state = PistolState::idle;
+    m_cooldown = 0.0f;
+    m_gun = LoadTexture("PIST2.png");
+    m_frameRec = { 0.0f, 0.0f, m_gun.width / 5.0f, m_gun.height * 1.0f};
+}
 
+void player::Pistol::update()
+{
+    if (m_state == PistolState::idle)
+    {
+        // Gun is idle, can shoot
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        {
+            m_cooldown = 0.4f;
+            m_state = PistolState::shoot1;
+        }
+    }
+    else
+    {
+        // Gun is shooting
+        m_cooldown -= GetFrameTime();
+        if (m_cooldown > 0.33f)
+        {
+            m_state = PistolState::shoot1;
+        }
+        else if (m_cooldown > 0.28f)
+        {
+            m_state = PistolState::shoot2;
+        }
+        else if (m_cooldown > 0.2f)
+        {
+            m_state = PistolState::shoot3;
+        }
+        else if (m_cooldown > 0.13f)
+        {
+            m_state = PistolState::shoot4;
+        }
+        else if (m_cooldown <= 0.0f)
+        {
+            m_state = PistolState::idle;
+            m_cooldown = 0.0f;
+        }
+        m_frameRec.x = m_state * m_gun.width / 5.0f;
 
+    }
+
+}
+
+void player::Pistol::draw()
+{
+    DrawTextureRec(m_gun, m_frameRec, Vector2{ static_cast<float>(SCREEN_WIDTH - m_gun.width / 5.0f), static_cast<float>(SCREEN_HEIGHT - m_gun.height) }, WHITE);
+}

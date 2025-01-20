@@ -34,7 +34,7 @@ void object::Cube::move(Vector3 newPos)
 void object::Capsule::draw()
 {
 	DrawCapsule(m_startPos, m_endPos, m_radius, m_slices, m_rings, m_color);
-	//DrawCapsuleWires(m_startPos, m_endPos, m_radius, m_slices, m_rings, m_color);
+	//DrawCapsuleWires(m_startPos, m_endPos, m_radius, m_slices, m_rings, BLACK);
 }
 
 void object::Capsule::move(Vector3 newEndPos)

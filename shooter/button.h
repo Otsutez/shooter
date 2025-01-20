@@ -37,4 +37,17 @@ namespace button {
 		string m_text;
 		ButtonState m_state{ idle };
 	};
+
+	class InputBox
+	{
+	public:
+		InputBox(Rectangle rec);
+		void update();
+		void draw();
+		string getAddress();
+
+	private:
+		Rectangle m_rec;
+		string m_text;
+	};
 }

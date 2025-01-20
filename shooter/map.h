@@ -10,7 +10,7 @@ namespace map
 	{
 	public:
 		Map();
-		void draw();
+		void draw(Camera3D camera);
 		std::vector<object::Cube*>& getObjects();
 
 	private:

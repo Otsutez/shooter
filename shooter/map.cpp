@@ -56,12 +56,14 @@ map::Map::Map() :
 	}
 }
 
-void map::Map::draw()
+void map::Map::draw(Camera3D camera)
 {
+	BeginMode3D(camera);
 	m_plane->draw();
 	for (object::Object* object : m_objects) {
 		object->draw();
 	}
+	EndMode3D();
 }
 
 std::vector<object::Cube*>& map::Map::getObjects()

@@ -1,8 +1,3 @@
-/*
-* We implement our Game object using the state design pattern.
-* https://gameprogrammingpatterns.com/state.html
-*/
-
 #pragma once
 #include <string>
 #include "raylib.h"
@@ -12,6 +7,7 @@
 #include "map.h"
 
 using button::Button;
+using button::InputBox;
 using player::Player;
 using map::Map;
 
@@ -39,9 +35,11 @@ namespace game {
 		Camera3D m_lobbyCamera;
 		Button* m_playButton;
 		Button* m_quitButton;
-		Player* m_player;
+		Player* m_player1;
+		Player* m_player2;
 		Map* m_map;
 		Color m_bg;
 		Texture2D m_crosshair;
+		int sock;
 	};
 };

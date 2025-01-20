@@ -145,6 +145,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="crosshair007.png" />
+    <Image Include="PIST1.png" />
+    <Image Include="PIST2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
